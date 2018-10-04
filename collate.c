@@ -873,12 +873,12 @@ rev_tag_search(tag_t *tag, cvs_commit **revisions, git_repo *gl)
     git_commit *g = git_commit_build(revs, c, tag->count);
     free(revs);
     g->parent = c->gitspace;
+    tag->commit = g;
     rev_ref *parent_branch = git_branch_of_commit(gl, c);
     rev_ref *tag_branch = xcalloc(1, sizeof(rev_ref), __func__);
     tag_branch->parent = parent_branch;
     /* type punning */
     tag_branch->commit = (cvs_commit *)g;
-    tag_branch->ref_name = tag->name;
     tag_branch->depth = parent_branch->depth + 1;
     rev_ref *r;
     /* Add tag branch to end of list to maintain toposort */
