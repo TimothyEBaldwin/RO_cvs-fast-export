@@ -176,6 +176,7 @@ main(int argc, char **argv)
     forest_t        forest;
     export_options_t export_options = {
 	.branch_prefix = "refs/heads/",
+	.tag_prefix = "refs/tags/",
 	.id_token_expand =  EXPANDUNSPEC,
     };
     export_stats_t	export_stats;
@@ -218,6 +219,8 @@ main(int argc, char **argv)
             { "expand",             2, 0, 'k' },
             { "remote",             1, 0, 'e' },
             { "strip",              1, 0, 's' },
+            { "tag-prefix",         1, 0, 'X' },
+            { "branch-prefix",      1, 0, 'B' },
             { "progress",           0, 0, 'p' },
             { "promiscuous",        0, 0, 'P' },
             { "incremental",        1, 0, 'i' },
@@ -250,6 +253,8 @@ main(int argc, char **argv)
 		   " -r --reposurgeon                Issue cvs-revision properties\n"
 		   " -T                              Force deterministic dates\n"
                    " -e --remote=REMOTE              Relocate branches to refs/remotes/REMOTE\n"
+		   "    --branch-prefix=PREFIX       Relocate branches to PREFIX\n"
+		   "    --tag-prefix=PREFIX          Relocate tags to PREFIX\n"
                    " -s --strip=PREFIX               Strip the given PREFIX instead of longest common prefix\n"
 		   " -p --progress                   Enable load-status reporting\n"
 		   " -P --promiscuous                Process files without ,v extension\n"
@@ -320,6 +325,14 @@ main(int argc, char **argv)
 	    assert(optarg);
 	    export_options.branch_prefix = (char*)xmalloc(strlen(optarg)+15, __func__);
 	    sprintf(export_options.branch_prefix, "refs/remotes/%s/", optarg);
+	    break;
+	case 'B':
+	    assert(optarg);
+	    export_options.branch_prefix = optarg;
+	    break;
+	case 'X':
+	    assert(optarg);
+	    export_options.tag_prefix = optarg;
 	    break;
 	case 's':
 	    assert(optarg);

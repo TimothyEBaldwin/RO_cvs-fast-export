@@ -793,7 +793,7 @@ void export_commits(forest_t *forest,
 		    progress_step();
 		    for (t = all_tags; t; t = t->next)
 			if (t->commit == gc && display_date(gc, markmap[gc->serial], opts->force_dates) > opts->fromtime)
-			    printf("reset refs/tags/%s\nfrom :%d\n\n", t->name, (int)markmap[gc->serial]);
+			    printf("reset %s%s\nfrom :%d\n\n", opts->tag_prefix, t->name, (int)markmap[gc->serial]);
 		}
 
 		free(history);
@@ -854,7 +854,7 @@ void export_commits(forest_t *forest,
 	    export_commit(hp->commit, hp->head->ref_name, report, opts);
 	    for (t = all_tags; t; t = t->next)
 		if (t->commit == hp->commit && display_date(hp->commit, markmap[hp->commit->serial], opts->force_dates) > opts->fromtime)
-		    printf("reset refs/tags/%s\nfrom :%d\n\n", t->name, (int)markmap[hp->commit->serial]);
+		    printf("reset %s%s\nfrom :%d\n\n", opts->tag_prefix, t->name, (int)markmap[hp->commit->serial]);
 	}
 
 	free(history);

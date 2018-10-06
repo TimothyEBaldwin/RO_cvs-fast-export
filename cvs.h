@@ -510,6 +510,7 @@ typedef struct _export_options {
     struct timespec start_time;
     enum expand_mode id_token_expand;
     char *branch_prefix; 
+    char *tag_prefix;
     time_t fromtime;
     FILE *revision_map;
     bool reposurgeon;
