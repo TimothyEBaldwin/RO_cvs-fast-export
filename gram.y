@@ -152,6 +152,11 @@ symbols		: symbols symbol
 symbol		: name COLON NUMBER
 		  {
 		  	$$ = xcalloc (1, sizeof (cvs_symbol), "making symbol");
+			if ($3.c & 1) {
+			  $3.n[$3.c] = $3.n[$3.c - 1];
+			  $3.n[$3.c - 1] = 0;
+			  $3.c++;
+			}
 			$$->symbol_name = $1;
 			$$->number = atom_cvs_number($3);
 		  }
