@@ -838,9 +838,9 @@ cvs_master_digest(cvs_file *cvs, cvs_master *cm, rev_master *master)
 	    rev_list_add_head(cm, branch, NULL, 0);
 	}
     }
+    cvs_master_set_refs(cm, cvs);
     cvs_master_patch_vendor_branch(cm, cvs);
     cvs_master_graft_branches(cm, cvs);
-    cvs_master_set_refs(cm, cvs);
     cvs_master_sort_heads(cm, cvs);
     rev_list_set_tail(cm);
 
