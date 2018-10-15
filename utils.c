@@ -246,11 +246,13 @@ void announce(char const *format,...)
 {
     va_list args;
 
+    flockfile(stderr);
     progress_interrupt();
     fprintf(stderr, "cvs-fast-export: ");
     va_start(args, format);
     vfprintf(stderr, format, args);
     va_end(args);
+    funlockfile(stderr);
 }
 
 void warn(char const *format,...)
@@ -260,6 +262,7 @@ void warn(char const *format,...)
     if (nowarn)
 	return;
 
+    flockfile(LOGFILE);
     if (LOGFILE == stderr)
 	progress_interrupt();
     fprintf(LOGFILE, "cvs-fast-export: ");
@@ -268,16 +271,19 @@ void warn(char const *format,...)
     va_end(args);
 
     warncount++;
+    funlockfile(LOGFILE);
 }
 
 void debugmsg(char const *format,...)
 {
     va_list args;
 
+    flockfile(LOGFILE);
     progress_interrupt();
     va_start(args, format);
     vfprintf(LOGFILE, format, args);
     va_end(args);
+    funlockfile(LOGFILE);
 }
 
 // end
