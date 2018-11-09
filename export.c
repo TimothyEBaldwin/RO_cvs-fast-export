@@ -67,14 +67,6 @@ static int seqno_next(void)
     return seqno;
 }
 
-/*
- * GNU CVS default ignores.  We omit from this things that CVS ignores
- * by default but which are highly unlikely to turn up outside an
- * actual CVS repository and should be conspicuous if they do: RCS
- * SCCS CVS CVS.adm RCSLOG cvslog.*
- */
-#define CVS_IGNORES "# CVS default ignores begin\ntags\nTAGS\n.make.state\n.nse_depinfo\n*~\n\\#*\n.#*\n,*\n_$*\n*$\n*.old\n*.bak\n*.BAK\n*.orig\n*.rej\n.del-*\n*.a\n*.olb\n*.o\n*.obj\n*.so\n*.exe\n*.Z\n*.elc\n*.ln\ncore\n# CVS default ignores end\n"
-
 static char *blobfile(const char *basename,
 		      const int serial,
 		      const bool create, char *path)
@@ -134,21 +126,13 @@ static void export_blob(node_t *node,
 			export_options_t *opts)
 /* output the blob, or save where it will be available for random access */
 {
-    size_t extralen = 0;
-
     export_stats.snapsize += len;
-
-    if (strcmp(node->commit->master->name, ".cvsignore") == 0) {
-	extralen = sizeof(CVS_IGNORES) - 1;
-    }
 
     node->commit->serial = seqno_next();
     if (opts->reportmode == fast) {
 	markmap[node->commit->serial] = ++mark;
 	printf("blob\nmark :%d\n", (int)mark);
-	fprintf(stdout, "data %lu\n", (unsigned long)(len + extralen));
-	if (extralen > 0)
-	    fwrite(CVS_IGNORES, extralen, sizeof(char), stdout);
+	fprintf(stdout, "data %lu\n", (unsigned long)len);
 	fwrite(buf, len, sizeof(char), stdout);
 	fputc('\n', stdout);
     }
@@ -163,9 +147,7 @@ static void export_blob(node_t *node,
 	if (wfp == NULL)
 	    fatal_error("blobfile open of %s: %s (%d)", 
 			path, strerror(errno), errno);
-	fprintf(wfp, "data %lu\n", (unsigned long)(len + extralen));
-	if (extralen > 0)
-	    fwrite(CVS_IGNORES, extralen, sizeof(char), wfp);
+	fprintf(wfp, "data %lu\n", (unsigned long)len);
 	fwrite(buf, len, sizeof(char), wfp);
 	fputc('\n', wfp);
 	(void)fclose(wfp);
@@ -451,7 +433,6 @@ export_commit(git_commit *commit, const char *branch,
     if (report)
 	printf("mark :%d\n", (int)mark);
     if (report) {
-	static bool need_ignores = true;
 	const char *ts;
 	ct = display_date(commit, mark, opts->force_dates);
 	ts = utc_offset_timestamp(&ct, timezone);
@@ -482,17 +463,6 @@ export_commit(git_commit *commit, const char *branch,
 		       op2->path);
 	    if (op2->op == 'D')
 		printf("D %s\n", op2->path);
-	    /*
-	     * If there's a .gitignore in the first commit, don't generate one.
-	     * export_blob() will already have prepended them.
-	     */
-	    if (need_ignores && op2->path == s_gitignore)
-		need_ignores = false;
-	}
-	if (need_ignores) {
-	    need_ignores = false;
-	    printf("M 100644 inline .gitignore\ndata %d\n%s\n",
-		   (int)sizeof(CVS_IGNORES)-1, CVS_IGNORES);
 	}
 	if (revpairs != NULL && strlen(revpairs) > 0)
 	{
