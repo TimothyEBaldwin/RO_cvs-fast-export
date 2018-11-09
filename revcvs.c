@@ -323,20 +323,20 @@ cvs_master_patch_vendor_branch(cvs_master *cm, cvs_file *cvs)
 	}
     }
 
-    /* if there's a vendor branch and no commit 1.2... */
-    if (nvendor != NULL && trunk->commit->parent == NULL) {
-	cvs_commit	*vlast, *oldtip = trunk->commit;
-	trunk->commit = nvendor->commit;
-	trunk->degree = nvendor->commit->number->c;
-	trunk->number = nvendor->commit->number;
-	for (vlast = trunk->commit; vlast; vlast = vlast->parent)
-	    if (!vlast->parent) {
-		vlast->parent = oldtip;
-		break;
-	    }
-	for (vendor = cm->heads; vendor; vendor = vendor->next)
-	    if (vendor->next == nvendor)
-		vendor->next = nvendor->next;
+    /* if there's a vendor branch patch it in instead of 1.1 */
+    if (nvendor != NULL) {
+        cvstime_t tt = RCS_OMEGA;
+        cvs_commit **t = &trunk->commit;
+        while((*t)->parent) {
+            tt = (*t)->date;
+            t = &(*t)->parent;
+        }
+        cvs_commit *v = nvendor->commit;
+        while(v && v->date > tt)
+            v = v->parent;
+        *t = v;
+        trunk->number = trunk->commit->number;
+        trunk->degree = trunk->commit->number->c;
     }
 }
 
