@@ -1,3 +1,7 @@
+This has been modified for the purpose of converting RISC OS from
+CVS to GIT, many of the changes are not useful or broken in
+the general case.
+
 = README for cvs-fast-export =
 
 This program analyzes a collection of RCS files in a CVS repository
