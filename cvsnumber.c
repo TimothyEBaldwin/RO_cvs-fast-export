@@ -148,11 +148,9 @@ cvs_is_vendor(const cvs_number *number)
 /* is the specified CVS release number on a vendor branch? */
 {
     if (number->c != 4) return 0;
-    if (number->n[0] != 1)
-	return false;
     if (number->n[1] != 1)
 	return false;
-    if ((number->n[2] & 1) != 1)
+    if ((number->n[0] != 1 || (number->n[2] & 1) != 1) && (number->n[0] != 4 || number->n[2] != 3))
 	return false;
     return true;
 }
